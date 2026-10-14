@@ -28,6 +28,7 @@
 		775F4C6BAC28DDE0B944A669 /* MatrixSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35D25207462DFAD250659D /* MatrixSaverView.swift */; };
 		79940E5EE863453C20D700A1 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8EF983770F127AA2E0B66F12 /* Shaders.metal */; };
 		8A488B3F98AC9C19C940F0BA /* SaverSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F8619ED393AE446B4EC600 /* SaverSettingsTests.swift */; };
+		8D5833F90D2968AFE6205233 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069C4D275F158311F8D8B861 /* main.swift */; };
 		8E295CA7ADEC77BA04098626 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B500DB40A6102A33964CC /* Metal.framework */; };
 		916F9A6CD83FD5D70E3A00A1 /* ConfigureSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5BB3BF21F97D25855847928 /* ConfigureSheet.swift */; };
 		939857E9BF3941A54C8771CF /* RainMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BC60B6D3E716334A70F050 /* RainMath.swift */; };
@@ -45,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		05BC60B6D3E716334A70F050 /* RainMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainMath.swift; sourceTree = "<group>"; };
+		069C4D275F158311F8D8B861 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		115F248FCFE072E24AB06E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		248F12717F3EA857433E4A74 /* SaverTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaverTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		376665C0276EE16DB38D446C /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = System/Library/Frameworks/ScreenSaver.framework; sourceTree = SDKROOT; };
@@ -168,6 +170,7 @@
 		EB2D4826B39589360A0CF891 /* SaverTest */ = {
 			isa = PBXGroup;
 			children = (
+				069C4D275F158311F8D8B861 /* main.swift */,
 			);
 			path = SaverTest;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				4A893E002CE3186294263117 /* Shaders.metal in Sources */,
 				9955229DEB45925446CFD4DE /* Uniforms.swift in Sources */,
 				FF1F5D467C628C34CB8A77BD /* WorldGeometry.swift in Sources */,
+				8D5833F90D2968AFE6205233 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
