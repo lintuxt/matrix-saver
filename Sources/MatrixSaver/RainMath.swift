@@ -38,27 +38,38 @@ enum RainMath {
         Float(now.truncatingRemainder(dividingBy: timeWrap))
     }
 
+    /// Head position of one stream of a column. `active` is false when the stream is
+    /// density-culled. `period` is the wrap length in rows.
+    static func headRow(seed: UInt32, col: UInt32, stream s: UInt32, time t: Float,
+                        speed: Float, density: Float, worldRows: Float)
+        -> (headRow: Float, len: Float, active: Bool) {
+        if s > 0 && unit(hash(seed, col, s, 4)) >= density { return (0, 0, false) }
+        let rSpeed = unit(hash(seed, col, s, 0))
+        let rPhase = unit(hash(seed, col, s, 1))
+        let rLen = unit(hash(seed, col, s, 2))
+        let rGap = unit(hash(seed, col, s, 3))
+
+        let len = mix(8, 30, rLen)
+        let gap = worldRows * mix(0.1, 1.2, rGap) * max(1.2 / max(density, 0.05) - 1.0, 0.05)
+        let period = worldRows + len + gap
+        let rawSpeed = speed * mix(8, 22, rSpeed)  // rows per second
+        let cycles = max((rawSpeed * Float(timeWrap) / period).rounded(), 1)
+        let rowsPerSec = cycles * period / Float(timeWrap)
+
+        let x = t * rowsPerSec + rPhase * period
+        return (x - period * (x / period).rounded(.down), len, true)
+    }
+
     static func cell(seed: UInt32, col: UInt32, row: UInt32, time t: Float,
                      speed: Float, density: Float, worldRows: Float, glyphCount: UInt32) -> Cell {
         var bright: Float = 0
         var head: Float = 0
         for s in 0..<streams {
-            if s > 0 && unit(hash(seed, col, s, 4)) >= density { continue }
-            let rSpeed = unit(hash(seed, col, s, 0))
-            let rPhase = unit(hash(seed, col, s, 1))
-            let rLen = unit(hash(seed, col, s, 2))
-            let rGap = unit(hash(seed, col, s, 3))
-
-            let len = mix(8, 30, rLen)
-            let gap = worldRows * mix(0.1, 1.2, rGap) * max(1.2 / max(density, 0.05) - 1.0, 0.05)
-            let period = worldRows + len + gap
-            let rawSpeed = speed * mix(8, 22, rSpeed)  // rows per second
-            let cycles = max((rawSpeed * Float(timeWrap) / period).rounded(), 1)
-            let rowsPerSec = cycles * period / Float(timeWrap)
-
-            let x = t * rowsPerSec + rPhase * period
-            let headRow = x - period * (x / period).rounded(.down)
-            let d = headRow - Float(row)
+            let st = headRow(seed: seed, col: col, stream: s, time: t,
+                             speed: speed, density: density, worldRows: worldRows)
+            if !st.active { continue }
+            let len = st.len
+            let d = st.headRow - Float(row)
             if d >= 0 && d < len {
                 let f = 1 - d / len
                 let b = f * f
