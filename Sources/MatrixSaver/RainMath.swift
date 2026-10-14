@@ -39,7 +39,7 @@ enum RainMath {
     }
 
     /// Head position of one stream of a column. `active` is false when the stream is
-    /// density-culled. `period` is the wrap length in rows.
+    /// density-culled.
     static func headRow(seed: UInt32, col: UInt32, stream s: UInt32, time t: Float,
                         speed: Float, density: Float, worldRows: Float)
         -> (headRow: Float, len: Float, active: Bool) {

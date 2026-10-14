@@ -67,7 +67,7 @@ final class MatrixSaverView: ScreenSaverView {
     private func commonInit() {
         wantsLayer = true
         layer?.backgroundColor = NSColor.black.cgColor
-        animationTimeInterval = 1.0 / 60.0  // unused: frames come from the display link
+        animationTimeInterval = 1.0  // frames come from our display link; keep the host timer idle
 
         if let metalView {
             metalView.frame = bounds
@@ -142,7 +142,7 @@ final class MatrixSaverView: ScreenSaverView {
     }
 
     private func screensaverWillStop() {
-        guard !isLameDuck else { return }
+        guard !isLameDuck, !isPreviewMode else { return }
         Self.log.info("""
             willstop serial=\(self.serial) preview=\(self.isPreviewMode) \
             key=\(self.instanceKey, privacy: .public) pid=\(self.pid)
@@ -163,7 +163,7 @@ final class MatrixSaverView: ScreenSaverView {
     }
 
     private func screensaverDidStart() {
-        guard hasStarted, !isRunning, !isLameDuck, window != nil else { return }
+        guard !isPreviewMode, hasStarted, !isRunning, !isLameDuck, window != nil else { return }
         startLink()
     }
 
@@ -172,7 +172,9 @@ final class MatrixSaverView: ScreenSaverView {
               other.serial > serial else { return }
         // Compare against our LIVE key: never-started instances still hold "unknown".
         let liveKey = currentInstanceKey()
-        guard other.instanceKey == liveKey else { return }
+        // An unresolved ("unknown") key on either side must never lame-duck anyone.
+        guard !other.instanceKey.contains("unknown"), !liveKey.contains("unknown"),
+              other.instanceKey == liveKey else { return }
         instanceKey = liveKey
         becomeLameDuck(replacedBy: other.serial)
     }
@@ -195,10 +197,20 @@ final class MatrixSaverView: ScreenSaverView {
     }
 
     private func currentInstanceKey() -> String {
-        if Self.detectPreview(isPreview: isPreview, rect: bounds) { return "preview" }
+        let prefix = Self.detectPreview(isPreview: isPreview, rect: bounds) ? "p" : "f"
+        guard let window else { return "\(prefix)-unknown" }
+        var screen = window.screen
+        if screen == nil {
+            screen = NSScreen.screens.max { a, b in
+                let ia = a.frame.intersection(window.frame)
+                let ib = b.frame.intersection(window.frame)
+                return ia.width * ia.height < ib.width * ib.height
+            }
+            if let s = screen, s.frame.intersection(window.frame).isNull { screen = nil }
+        }
         let key = NSDeviceDescriptionKey("NSScreenNumber")
-        guard let number = window?.screen?.deviceDescription[key] as? NSNumber else { return "unknown" }
-        return number.stringValue
+        guard let number = screen?.deviceDescription[key] as? NSNumber else { return "\(prefix)-unknown" }
+        return "\(prefix)-\(number.stringValue)"
     }
 
     // MARK: - Display link
@@ -290,6 +302,10 @@ final class MatrixSaverView: ScreenSaverView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         updateGeometry()
+        if hasStarted, !isLameDuck, window != nil {
+            instanceKey = currentInstanceKey()
+            NotificationCenter.default.post(name: Self.instanceStarted, object: self)
+        }
     }
 
     override func viewDidChangeBackingProperties() {

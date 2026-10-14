@@ -74,6 +74,7 @@ struct SaverSettings: Equatable {
 
     static func load() -> SaverSettings {
         guard let store = store() else { return defaults }
+        store.synchronize()  // pick up changes saved by another host process
         return load(from: store)
     }
 
