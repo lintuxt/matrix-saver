@@ -59,6 +59,7 @@ targets:
       - path: Sources/MatrixSaver/WorldGeometry.swift
       - path: Sources/MatrixSaver/Uniforms.swift
       - path: Sources/MatrixSaver/Shaders.metal
+      - path: Sources/MatrixSaver/SaverSettings.swift
       - path: Tests/MatrixSaverTests
     settings:
       base:
@@ -66,6 +67,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - sdk: Metal.framework
+      - sdk: ScreenSaver.framework
 
 schemes:
   MatrixSaver:
