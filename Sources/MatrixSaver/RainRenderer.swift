@@ -155,6 +155,14 @@ final class RainRenderer {
         enc.endEncoding()
     }
 
+    /// Drops the intermediate render targets; the next `render` recreates them.
+    func releaseResources() {
+        scene = nil
+        glowA = nil
+        glowB = nil
+        size = (0, 0)
+    }
+
     private func ensureTextures(width: Int, height: Int) {
         guard width != size.width || height != size.height || scene == nil else { return }
         size = (width, height)

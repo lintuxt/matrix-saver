@@ -21,13 +21,15 @@ final class MatrixSaverView: ScreenSaverView {
     private static var nextSerial = 0
 
     private let serial: Int
-    private let metalView = MetalLayerView()
+    private var metalView: MetalLayerView? = MetalLayerView()
     private var renderer: RainRenderer?
     private var settings = SaverSettings.load()
 
     private var isPreviewMode: Bool
     private var instanceKey = "unknown"
     private var isLameDuck = false
+    /// True once the host has called `startAnimation`; never-started instances must not render.
+    private var hasStarted = false
     private var isRunning: Bool { displayLink != nil }
 
     private var displayLink: CADisplayLink?
@@ -67,10 +69,12 @@ final class MatrixSaverView: ScreenSaverView {
         layer?.backgroundColor = NSColor.black.cgColor
         animationTimeInterval = 1.0 / 60.0  // unused: frames come from the display link
 
-        metalView.frame = bounds
-        metalView.autoresizingMask = [.width, .height]
-        addSubview(metalView)
-        if let metalLayer = metalView.metalLayer {
+        if let metalView {
+            metalView.frame = bounds
+            metalView.autoresizingMask = [.width, .height]
+            addSubview(metalView)
+        }
+        if let metalLayer = metalView?.metalLayer {
             renderer = RainRenderer(layer: metalLayer)
         }
         if renderer == nil { Self.log.error("renderer unavailable (serial \(self.serial))") }
@@ -116,6 +120,7 @@ final class MatrixSaverView: ScreenSaverView {
     override func startAnimation() {
         if isLameDuck { return }
         super.startAnimation()
+        hasStarted = true
         exitWork?.cancel()
         exitWork = nil
         isPreviewMode = Self.detectPreview(isPreview: isPreview, rect: bounds)
@@ -132,6 +137,7 @@ final class MatrixSaverView: ScreenSaverView {
     override func stopAnimation() {
         Self.log.info("stop serial=\(self.serial) preview=\(self.isPreviewMode) pid=\(self.pid)")
         stopLink()
+        releaseGPUResources()
         super.stopAnimation()
     }
 
@@ -142,6 +148,7 @@ final class MatrixSaverView: ScreenSaverView {
             key=\(self.instanceKey, privacy: .public) pid=\(self.pid)
             """)
         stopLink()
+        releaseGPUResources()
         guard !isPreviewMode, SaverSettings.store()?.bool(forKey: Self.exitOnStopKey) == true else { return }
         exitWork?.cancel()
         let work = DispatchWorkItem { [weak self] in
@@ -156,13 +163,17 @@ final class MatrixSaverView: ScreenSaverView {
     }
 
     private func screensaverDidStart() {
-        guard !isRunning, !isLameDuck, window != nil else { return }
+        guard hasStarted, !isRunning, !isLameDuck, window != nil else { return }
         startLink()
     }
 
     private func otherInstanceStarted(_ note: Notification) {
         guard !isLameDuck, let other = note.object as? MatrixSaverView, other !== self,
-              other.instanceKey == instanceKey, other.serial > serial else { return }
+              other.serial > serial else { return }
+        // Compare against our LIVE key: never-started instances still hold "unknown".
+        let liveKey = currentInstanceKey()
+        guard other.instanceKey == liveKey else { return }
+        instanceKey = liveKey
         becomeLameDuck(replacedBy: other.serial)
     }
 
@@ -177,12 +188,14 @@ final class MatrixSaverView: ScreenSaverView {
         exitWork = nil
         for (center, token) in observers { center.removeObserver(token) }
         observers.removeAll()
+        releaseGPUResources()
         renderer = nil
-        metalView.removeFromSuperview()
+        metalView?.removeFromSuperview()
+        metalView = nil  // frees the CAMetalLayer and its drawable pool
     }
 
     private func currentInstanceKey() -> String {
-        if isPreviewMode { return "preview" }
+        if Self.detectPreview(isPreview: isPreview, rect: bounds) { return "preview" }
         let key = NSDeviceDescriptionKey("NSScreenNumber")
         guard let number = window?.screen?.deviceDescription[key] as? NSNumber else { return "unknown" }
         return number.stringValue
@@ -193,7 +206,7 @@ final class MatrixSaverView: ScreenSaverView {
     private func startLink() {
         guard !isLameDuck, displayLink == nil, renderer != nil else { return }
         startDate = Date()
-        updateGeometry()
+        updateGeometry(starting: true)
         let link = displayLink(target: DisplayLinkProxy(self), selector: #selector(DisplayLinkProxy.tick(_:)))
         let fps: Float = isPreviewMode ? 30 : 60
         link.preferredFrameRateRange = CAFrameRateRange(minimum: fps / 2, maximum: fps, preferred: fps)
@@ -204,6 +217,13 @@ final class MatrixSaverView: ScreenSaverView {
     private func stopLink() {
         displayLink?.invalidate()
         displayLink = nil
+    }
+
+    /// Drops intermediate textures and shrinks the drawable pool to 1×1.
+    /// `updateGeometry(starting:)` (called by `startLink`) restores the drawable size on restart.
+    private func releaseGPUResources() {
+        renderer?.releaseResources()
+        metalView?.metalLayer?.drawableSize = CGSize(width: 1, height: 1)
     }
 
     fileprivate func renderFrame() {
@@ -232,7 +252,7 @@ final class MatrixSaverView: ScreenSaverView {
     private var glyphSize: Double { settings.glyphSize.rounded() }
     private var cellSize: CGSize { CGSize(width: glyphSize * 0.72, height: glyphSize) }
 
-    private func updateGeometry() {
+    private func updateGeometry(starting: Bool = false) {
         guard !isLameDuck else { return }
         backingScale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
         isPreviewMode = Self.detectPreview(isPreview: isPreview, rect: bounds)
@@ -247,7 +267,8 @@ final class MatrixSaverView: ScreenSaverView {
             worldRows = WorldGeometry(screenFrames: [bounds]).rows(cellHeight: cellSize.height)
         }
 
-        if let metalLayer = metalView.metalLayer {
+        // While stopped the drawable pool stays shrunk to 1×1 (see releaseGPUResources).
+        if isRunning || starting, let metalLayer = metalView?.metalLayer {
             metalLayer.contentsScale = backingScale
             metalLayer.drawableSize = CGSize(width: max(bounds.width * backingScale, 1),
                                              height: max(bounds.height * backingScale, 1))
