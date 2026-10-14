@@ -11,15 +11,11 @@ final class SaverWindow: NSWindow {
         case "q", "\u{1B}":
             NSApp.terminate(nil)
         case "s":
-            guard isMainScreenWindow, let view = contentView as? MatrixSaverView,
-                  let sheet = view.configureSheet, attachedSheet == nil else { return }
-            beginSheet(sheet)
+            (NSApp.delegate as? AppDelegate)?.openConfigureSheet()
         default:
             super.keyDown(with: event)
         }
     }
-
-    private var isMainScreenWindow: Bool { screen == NSScreen.main || NSScreen.screens.count == 1 }
 }
 
 @MainActor
@@ -42,6 +38,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         views.forEach { $0.stopAnimation() }
     }
 
+    /// Opens the configure sheet on the main-screen window, whichever window received the key.
+    func openConfigureSheet() {
+        let target = windows.first { $0.screen == NSScreen.main } ?? windows.first
+        guard let target, target.attachedSheet == nil,
+              let view = target.contentView as? MatrixSaverView,
+              let sheet = view.configureSheet else { return }
+        target.makeKeyAndOrderFront(nil)
+        target.beginSheet(sheet)
+    }
+
     private func openPreview() {
         let rect = NSRect(x: 0, y: 0, width: 320, height: 200)
         let window = SaverWindow(contentRect: rect, styleMask: [.titled, .closable],
@@ -62,8 +68,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             window.backgroundColor = .black
             install(in: window, rect: NSRect(origin: .zero, size: screen.frame.size), isPreview: false)
             window.setFrame(screen.frame, display: true)
-            window.makeKeyAndOrderFront(nil)
+            window.orderFront(nil)
         }
+        // Make the main-screen window key (last-ordered window would otherwise win).
+        (windows.first { $0.screen == NSScreen.main } ?? windows.first)?.makeKeyAndOrderFront(nil)
     }
 
     private func install(in window: SaverWindow, rect: NSRect, isPreview: Bool) {
