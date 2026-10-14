@@ -1,0 +1,74 @@
+import Foundation
+
+/// Swift twin of the cell function in Shaders.metal. Keep the two in lockstep:
+/// the GPU parity test compares them.
+///
+/// Every cell is a pure function of (seed, column, row, time), so independent
+/// instances on different displays agree without talking to each other.
+enum RainMath {
+    /// Time wraps at this period. Column speeds are snapped so every column completes
+    /// a whole number of cycles per wrap, which makes the wrap seamless.
+    static let timeWrap: Double = 1024
+    static let streams: UInt32 = 2
+
+    struct Cell: Equatable {
+        var brightness: Float  // 0 = empty
+        var head: Float        // 1 = leading glyph of a drop
+        var glyph: UInt32
+    }
+
+    static func pcg(_ v: UInt32) -> UInt32 {
+        let state = v &* 747_796_405 &+ 2_891_336_453
+        let word = ((state >> ((state >> 28) &+ 4)) ^ state) &* 277_803_737
+        return (word >> 22) ^ word
+    }
+
+    static func hash(_ seed: UInt32, _ a: UInt32, _ b: UInt32, _ c: UInt32) -> UInt32 {
+        pcg(seed ^ pcg(a ^ pcg(b ^ pcg(c))))
+    }
+
+    /// Uniform float in [0, 1) using 24 bits, exact in Float on both CPU and GPU.
+    static func unit(_ h: UInt32) -> Float {
+        Float(h >> 8) * (1.0 / 16_777_216.0)
+    }
+
+    static func mix(_ a: Float, _ b: Float, _ t: Float) -> Float { a + (b - a) * t }
+
+    static func wrappedTime(_ now: TimeInterval) -> Float {
+        Float(now.truncatingRemainder(dividingBy: timeWrap))
+    }
+
+    static func cell(seed: UInt32, col: UInt32, row: UInt32, time t: Float,
+                     speed: Float, density: Float, worldRows: Float, glyphCount: UInt32) -> Cell {
+        var bright: Float = 0
+        var head: Float = 0
+        for s in 0..<streams {
+            if s > 0 && unit(hash(seed, col, s, 4)) >= density { continue }
+            let rSpeed = unit(hash(seed, col, s, 0))
+            let rPhase = unit(hash(seed, col, s, 1))
+            let rLen = unit(hash(seed, col, s, 2))
+            let rGap = unit(hash(seed, col, s, 3))
+
+            let len = mix(8, 30, rLen)
+            let gap = worldRows * mix(0.1, 1.2, rGap) * max(1.2 / max(density, 0.05) - 1.0, 0.05)
+            let period = worldRows + len + gap
+            let rawSpeed = speed * mix(8, 22, rSpeed)  // rows per second
+            let cycles = max((rawSpeed * Float(timeWrap) / period).rounded(), 1)
+            let rowsPerSec = cycles * period / Float(timeWrap)
+
+            let x = t * rowsPerSec + rPhase * period
+            let headRow = x - period * (x / period).rounded(.down)
+            let d = headRow - Float(row)
+            if d >= 0 && d < len {
+                let f = 1 - d / len
+                let b = f * f
+                if b > bright { bright = b }
+                if d < 1 { head = 1 }
+            }
+        }
+        let rate = mix(0.4, 4.0, unit(hash(seed, col, row, 7)))
+        let tick = UInt32(max(t * rate, 0).rounded(.down))
+        let glyph = hash(seed, col, row, tick &+ 11) % max(glyphCount, 1)
+        return Cell(brightness: bright, head: head, glyph: glyph)
+    }
+}

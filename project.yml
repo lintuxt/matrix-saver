@@ -1,0 +1,83 @@
+name: MatrixSaver
+options:
+  bundleIdPrefix: ai.lintuxt
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: NO
+
+targets:
+  MatrixSaver:
+    type: bundle
+    platform: macOS
+    sources:
+      - path: Sources/MatrixSaver
+    settings:
+      base:
+        PRODUCT_NAME: MatrixSaver
+        PRODUCT_BUNDLE_IDENTIFIER: ai.lintuxt.MatrixSaver
+        WRAPPER_EXTENSION: saver
+        INFOPLIST_FILE: Sources/MatrixSaver/Info.plist
+        INSTALL_PATH: "$(HOME)/Library/Screen Savers"
+        SKIP_INSTALL: YES
+    dependencies:
+      - sdk: ScreenSaver.framework
+      - sdk: Metal.framework
+      - sdk: QuartzCore.framework
+
+  SaverTest:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/MatrixSaver
+        excludes:
+          - Info.plist
+      - path: Sources/SaverTest
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.lintuxt.MatrixSaver.SaverTest
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        INFOPLIST_KEY_LSUIElement: NO
+    dependencies:
+      - sdk: ScreenSaver.framework
+      - sdk: Metal.framework
+
+  MatrixSaverTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Sources/MatrixSaver/RainMath.swift
+      - path: Sources/MatrixSaver/WorldGeometry.swift
+      - path: Sources/MatrixSaver/Uniforms.swift
+      - path: Sources/MatrixSaver/Shaders.metal
+      - path: Tests/MatrixSaverTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.lintuxt.MatrixSaver.tests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - sdk: Metal.framework
+
+schemes:
+  MatrixSaver:
+    build:
+      targets:
+        MatrixSaver: all
+    test:
+      targets:
+        - MatrixSaverTests
+  SaverTest:
+    build:
+      targets:
+        SaverTest: all
+    run:
+      config: Debug
