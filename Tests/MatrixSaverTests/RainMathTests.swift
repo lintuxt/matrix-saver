@@ -69,7 +69,7 @@ final class RainMathTests: XCTestCase {
     private func periodOf(col: UInt32, stream s: UInt32, speed: Float, density: Float) -> Float {
         let rLen = RainMath.unit(RainMath.hash(seed, col, s, 2))
         let rGap = RainMath.unit(RainMath.hash(seed, col, s, 3))
-        let len = RainMath.mix(8, 30, rLen)
+        let len = RainMath.mix(RainMath.minTrail, RainMath.maxTrail, rLen)
         let gap = 80 * RainMath.mix(0.1, 1.2, rGap) * max(1.2 / max(density, 0.05) - 1.0, 0.05)
         return 80 + len + gap
     }

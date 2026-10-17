@@ -23,6 +23,7 @@ final class SaverSettingsTests: XCTestCase {
         XCTAssertEqual(d.density, 0.6)
         XCTAssertEqual(d.glyphSize, 18)
         XCTAssertTrue(d.glow)
+        XCTAssertFalse(d.systemFailure)
         XCTAssertEqual(SaverSettings.load(from: store), d, "empty store loads defaults")
     }
 
@@ -42,7 +43,7 @@ final class SaverSettingsTests: XCTestCase {
     }
 
     func testRoundTrip() {
-        let s = SaverSettings(palette: .amber, speed: 2.5, density: 0.3, glyphSize: 24, glow: false)
+        let s = SaverSettings(palette: .amber, speed: 2.5, density: 0.3, glyphSize: 24, glow: false, systemFailure: true)
         let posted = expectation(forNotification: SaverSettings.didChange, object: nil)
         s.save(to: store)
         wait(for: [posted], timeout: 1)
@@ -65,7 +66,7 @@ final class SaverSettingsTests: XCTestCase {
 
     func testPaletteTints() {
         XCTAssertEqual(SaverSettings.Palette.allCases.count, 5)
-        XCTAssertEqual(SaverSettings.Palette.green.tint, SIMD4<Float>(0.25, 1.0, 0.45, 1))
+        XCTAssertEqual(SaverSettings.Palette.green.tint, SIMD4<Float>(0.08, 0.9, 0.24, 1))
         XCTAssertEqual(SaverSettings.Palette.white.tint, SIMD4<Float>(0.85, 0.9, 0.9, 1))
         for p in SaverSettings.Palette.allCases { XCTAssertFalse(p.displayName.isEmpty) }
     }

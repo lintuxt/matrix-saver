@@ -10,7 +10,7 @@ struct SaverSettings: Equatable {
         /// Linear-ish RGB tint (alpha 1).
         var tint: SIMD4<Float> {
             switch self {
-            case .green: SIMD4(0.25, 1.0, 0.45, 1)
+            case .green: SIMD4(0.08, 0.9, 0.24, 1)  // deeper film green
             case .amber: SIMD4(1.0, 0.65, 0.15, 1)
             case .blue: SIMD4(0.3, 0.6, 1.0, 1)
             case .red: SIMD4(1.0, 0.25, 0.2, 1)
@@ -42,6 +42,7 @@ struct SaverSettings: Equatable {
         static let density = "density"
         static let glyphSize = "glyphSize"
         static let glow = "glow"
+        static let systemFailure = "systemFailure"
     }
 
     var palette: Palette = .green
@@ -49,6 +50,8 @@ struct SaverSettings: Equatable {
     var density: Double = 0.6
     var glyphSize: Double = 18
     var glow: Bool = true
+    /// Show a "SYSTEM FAILURE" alert every few minutes.
+    var systemFailure: Bool = false
 
     static let defaults = SaverSettings()
 
@@ -85,6 +88,7 @@ struct SaverSettings: Equatable {
         if store.object(forKey: Key.density) != nil { s.density = store.double(forKey: Key.density) }
         if store.object(forKey: Key.glyphSize) != nil { s.glyphSize = store.double(forKey: Key.glyphSize) }
         if store.object(forKey: Key.glow) != nil { s.glow = store.bool(forKey: Key.glow) }
+        if store.object(forKey: Key.systemFailure) != nil { s.systemFailure = store.bool(forKey: Key.systemFailure) }
         return s.clamped()
     }
 
@@ -101,6 +105,7 @@ struct SaverSettings: Equatable {
         store.set(s.density, forKey: Key.density)
         store.set(s.glyphSize, forKey: Key.glyphSize)
         store.set(s.glow, forKey: Key.glow)
+        store.set(s.systemFailure, forKey: Key.systemFailure)
         store.synchronize()
         NotificationCenter.default.post(name: Self.didChange, object: nil)
     }

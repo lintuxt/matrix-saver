@@ -25,6 +25,7 @@ struct ConfigureSheet: View {
                 slider("Glyph size", value: $settings.glyphSize, in: SaverSettings.glyphSizeRange, step: 1,
                        label: String(format: "%.0f pt", settings.glyphSize))
                 Toggle("Glow", isOn: $settings.glow)
+                Toggle("System Failure alert", isOn: $settings.systemFailure)
             }
             HStack {
                 Button("Reset to Defaults") { settings = .defaults }

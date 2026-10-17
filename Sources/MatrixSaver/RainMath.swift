@@ -10,6 +10,11 @@ enum RainMath {
     /// a whole number of cycles per wrap, which makes the wrap seamless.
     static let timeWrap: Double = 1024
     static let streams: UInt32 = 2
+    /// Trail length in rows. Long, slowly fading trails like the 1999 film.
+    static let minTrail: Float = 14
+    static let maxTrail: Float = 48
+    /// Cells this many rows behind a head mutate fast; the rest of the trail barely changes.
+    static let nearHeadRows: Float = 3
 
     struct Cell: Equatable {
         var brightness: Float  // 0 = empty
@@ -49,7 +54,7 @@ enum RainMath {
         let rLen = unit(hash(seed, col, s, 2))
         let rGap = unit(hash(seed, col, s, 3))
 
-        let len = mix(8, 30, rLen)
+        let len = mix(minTrail, maxTrail, rLen)
         let gap = worldRows * mix(0.1, 1.2, rGap) * max(1.2 / max(density, 0.05) - 1.0, 0.05)
         let period = worldRows + len + gap
         let rawSpeed = speed * mix(8, 22, rSpeed)  // rows per second
@@ -64,6 +69,7 @@ enum RainMath {
                      speed: Float, density: Float, worldRows: Float, glyphCount: UInt32) -> Cell {
         var bright: Float = 0
         var head: Float = 0
+        var nearest = Float.greatestFiniteMagnitude  // rows behind the closest head
         for s in 0..<streams {
             let st = headRow(seed: seed, col: col, stream: s, time: t,
                              speed: speed, density: density, worldRows: worldRows)
@@ -72,12 +78,14 @@ enum RainMath {
             let d = st.headRow - Float(row)
             if d >= 0 && d < len {
                 let f = 1 - d / len
-                let b = f * f
+                let b = f * f.squareRoot()
                 if b > bright { bright = b }
                 if d < 1 { head = 1 }
+                nearest = min(nearest, d)
             }
         }
-        let rate = mix(0.4, 4.0, unit(hash(seed, col, row, 7)))
+        let r = unit(hash(seed, col, row, 7))
+        let rate = nearest < nearHeadRows ? mix(8, 14, r) : mix(0.05, 0.5, r)  // changes per second
         let tick = UInt32(max(t * rate, 0).rounded(.down))
         let glyph = hash(seed, col, row, tick &+ 11) % max(glyphCount, 1)
         return Cell(brightness: bright, head: head, glyph: glyph)

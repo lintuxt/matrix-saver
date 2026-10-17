@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Read or change MatrixSaver settings from the command line.
+# Works around the Options button going dead in System Settings after a preview.
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: matrix-config [key=value ...]
+       matrix-config --reset
+       matrix-config --help
+
+With no arguments, prints the current settings.
+
+Keys:
+  palette        green | amber | blue | red | white   (default green)
+  speed          0.25 – 3.0                           (default 1.0)
+  density        0.1 – 1.0                            (default 0.6)
+  glyphSize      10 – 40                              (default 18)
+  glow           true | false                         (default true)
+  systemFailure  true | false                         (default false)
+                 "SYSTEM FAILURE" alert every few minutes
+
+Changes apply the next time the screen saver starts (open -a ScreenSaverEngine).
+EOF
+}
+
+# No hardware UUID here: `defaults` appends it itself for paths inside a ByHost folder.
+PREFS="$HOME/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Preferences/ByHost/ai.lintuxt.MatrixSaver"
+
+show() {
+  local key value
+  for key in palette speed density glyphSize glow systemFailure; do
+    value=$(defaults read "$PREFS" "$key" 2>/dev/null || echo "(default)")
+    [[ ($key == glow || $key == systemFailure) && $value =~ ^[01]$ ]] && { [[ $value == 1 ]] && value=true || value=false; }
+    printf '%-14s %s\n' "$key" "$value"
+  done
+}
+
+in_range() {  # value min max
+  awk -v v="$1" -v lo="$2" -v hi="$3" 'BEGIN { exit !(v ~ /^-?[0-9]*\.?[0-9]+$/ && v >= lo && v <= hi) }'
+}
+
+die() { echo "matrix-config: $*" >&2; exit 1; }
+
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+  --reset)
+    for key in palette speed density glyphSize glow systemFailure; do
+      defaults delete "$PREFS" "$key" 2>/dev/null || true
+    done
+    show; exit 0 ;;
+  "") show; exit 0 ;;
+esac
+
+# Validate everything before writing anything.
+writes=()
+for arg in "$@"; do
+  [[ $arg == *=* ]] || die "expected key=value, got '$arg' (see --help)"
+  key=${arg%%=*} value=${arg#*=}
+  case $key in
+    palette)
+      [[ $value =~ ^(green|amber|blue|red|white)$ ]] || die "palette must be green, amber, blue, red or white"
+      writes+=("$key" -string "$value") ;;
+    speed)     in_range "$value" 0.25 3.0 || die "speed must be 0.25 – 3.0";  writes+=("$key" -float "$value") ;;
+    density)   in_range "$value" 0.1 1.0  || die "density must be 0.1 – 1.0"; writes+=("$key" -float "$value") ;;
+    glyphSize) in_range "$value" 10 40    || die "glyphSize must be 10 – 40"; writes+=("$key" -float "$value") ;;
+    glow|systemFailure)
+      [[ $value =~ ^(true|false)$ ]] || die "$key must be true or false"
+      writes+=("$key" -bool "$value") ;;
+    *) die "unknown key '$key' (see --help)" ;;
+  esac
+done
+
+for ((i = 0; i < ${#writes[@]}; i += 3)); do
+  defaults write "$PREFS" "${writes[i]}" "${writes[i+1]}" "${writes[i+2]}"
+done
+show

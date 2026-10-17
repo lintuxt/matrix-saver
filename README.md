@@ -11,6 +11,17 @@ Open System Settings > Screen Saver > MatrixSaver > Options:
 - Density: 0.1 to 1.0 (default 0.6)
 - Glyph size: 10 to 40 pt (default 18)
 - Glow: on by default
+- System Failure alert: off by default. When on, a film-style "SYSTEM FAILURE" box appears at the centre of each display for about 7 seconds, once every ~4 minutes, at the same moment on every display.
+
+The Options button often stops responding after a full-screen preview until System Settings is reopened (a `legacyScreenSaver` bug). The same settings can be read and changed from the command line:
+
+```sh
+./matrix-config                          # show current settings
+./matrix-config palette=amber speed=1.5  # change one or more
+./matrix-config --reset                  # back to defaults
+```
+
+Changes apply the next time the screen saver starts.
 
 ## Install
 
@@ -47,6 +58,16 @@ On macOS Sonoma through Tahoe the `legacyScreenSaver` host is unreliable: `stopA
 - https://github.com/JohnCoates/Aerial/issues/1396
 - https://developer.apple.com/forums/thread/787444
 - https://mjtsai.com/blog/2025/12/10/how-to-make-a-macos-screen-saver/
+
+### Hidden `SystemFailureAlways` default
+
+Keeps the System Failure alert on screen, for checking how it looks:
+
+```sh
+defaults write ~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Preferences/ByHost/ai.lintuxt.MatrixSaver SystemFailureAlways -bool true
+```
+
+Delete it again with `defaults delete <same path> SystemFailureAlways`.
 
 ### Hidden `ExitOnStop` default
 

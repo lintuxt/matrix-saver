@@ -17,13 +17,17 @@ final class MatrixSaverView: ScreenSaverView {
     private static let willStop = Notification.Name("com.apple.screensaver.willstop")
     private static let didStart = Notification.Name("com.apple.screensaver.didstart")
     private static let exitOnStopKey = "ExitOnStop"
+    /// Hidden default: keep the System Failure alert on screen (for checking its look).
+    private static let systemFailureAlwaysKey = "SystemFailureAlways"
     private static let seed: UInt32 = 0x4D41_5452  // "MATR"
     private static var nextSerial = 0
 
     private let serial: Int
     private var metalView: MetalLayerView? = MetalLayerView()
+    private var failureOverlay: SystemFailureOverlay? = SystemFailureOverlay()
     private var renderer: RainRenderer?
     private var settings = SaverSettings.load()
+    private var systemFailureAlways = false
 
     private var isPreviewMode: Bool
     private var instanceKey = "unknown"
@@ -73,6 +77,11 @@ final class MatrixSaverView: ScreenSaverView {
             metalView.frame = bounds
             metalView.autoresizingMask = [.width, .height]
             addSubview(metalView)
+        }
+        if let failureOverlay {
+            failureOverlay.frame = bounds
+            failureOverlay.autoresizingMask = [.width, .height]
+            addSubview(failureOverlay)  // above the rain
         }
         if let metalLayer = metalView?.metalLayer {
             renderer = RainRenderer(layer: metalLayer)
@@ -126,6 +135,7 @@ final class MatrixSaverView: ScreenSaverView {
         isPreviewMode = Self.detectPreview(isPreview: isPreview, rect: bounds)
         instanceKey = currentInstanceKey()
         settings = SaverSettings.load()
+        systemFailureAlways = SaverSettings.store()?.bool(forKey: Self.systemFailureAlwaysKey) == true
         Self.log.info("""
             start serial=\(self.serial) preview=\(self.isPreviewMode) \
             key=\(self.instanceKey, privacy: .public) pid=\(self.pid)
@@ -194,6 +204,8 @@ final class MatrixSaverView: ScreenSaverView {
         renderer = nil
         metalView?.removeFromSuperview()
         metalView = nil  // frees the CAMetalLayer and its drawable pool
+        failureOverlay?.removeFromSuperview()
+        failureOverlay = nil
     }
 
     private func currentInstanceKey() -> String {
@@ -246,7 +258,9 @@ final class MatrixSaverView: ScreenSaverView {
         u.cellSize = SIMD2(Float(cell.width), Float(cell.height))
         u.tint = settings.palette.tint
         u.scale = Float(backingScale)
-        u.time = RainMath.wrappedTime(Date().timeIntervalSince1970)
+        let now = Date().timeIntervalSince1970
+        // With the alert on, the rain freezes while it's up (as in the film's last shot).
+        u.time = RainMath.wrappedTime(settings.systemFailure ? SystemFailure.rainTime(seed: Self.seed, now: now) : now)
         u.speed = Float(settings.speed)
         u.density = Float(settings.density)
         u.worldRows = Float(worldRows)
@@ -256,6 +270,11 @@ final class MatrixSaverView: ScreenSaverView {
         u.atlasCols = UInt32(atlas.cols)
         u.atlasRows = UInt32(atlas.rows)
         renderer.render(uniforms: u, glow: settings.glow && !isPreviewMode)
+
+        let alert: Float = if systemFailureAlways { 1 } else if settings.systemFailure {
+            SystemFailure.opacity(seed: Self.seed, now: now)
+        } else { 0 }
+        failureOverlay?.update(tint: settings.palette.tint, opacity: alert * u.fade, scale: backingScale)
     }
 
     // MARK: - Geometry & settings

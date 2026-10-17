@@ -15,18 +15,23 @@
 		256B353A54B4CCB2F1693701 /* GlyphAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55902684EEDD91A4E7F0889C /* GlyphAtlas.swift */; };
 		25D9F2E0E1F5BCDC067ED2E2 /* RainRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E545DB7357FC7650E57092BA /* RainRenderer.swift */; };
 		2CF239CEC2440336CA56B043 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8EF983770F127AA2E0B66F12 /* Shaders.metal */; };
+		3398A2D8533A59D52F8336AB /* SystemFailureOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9B0C7E11911195B0EED09 /* SystemFailureOverlay.swift */; };
 		34A9392C16A44D4E04353F78 /* MatrixSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35D25207462DFAD250659D /* MatrixSaverView.swift */; };
 		34F3306642E3FEB04F53F248 /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B6D7C6800D287002FAF6EE /* Uniforms.swift */; };
 		4292C86DA477B102CA040EB4 /* WorldGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D896E011375A5435036E8FA9 /* WorldGeometryTests.swift */; };
+		4433525BA0E34314AA8FB723 /* SystemFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AAEAF7C7BEC80E10DC6A02 /* SystemFailureTests.swift */; };
 		47E84BA87E167CC4B85EE1A6 /* GlyphAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55902684EEDD91A4E7F0889C /* GlyphAtlas.swift */; };
 		4A893E002CE3186294263117 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8EF983770F127AA2E0B66F12 /* Shaders.metal */; };
 		4A955B412928CB306A38ACB4 /* RainMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BC60B6D3E716334A70F050 /* RainMath.swift */; };
+		5316DE48BF805C542E9C9E1F /* SystemFailureOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9B0C7E11911195B0EED09 /* SystemFailureOverlay.swift */; };
+		5774D9F4BBD6FC0BC792B848 /* SystemFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */; };
 		61F8D90950E7A7912E9A7B69 /* RainRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E545DB7357FC7650E57092BA /* RainRenderer.swift */; };
 		6604879642C43807910F1014 /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B6D7C6800D287002FAF6EE /* Uniforms.swift */; };
 		6B895523D4FC355CA73E107C /* WorldGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD802E21A51ED4F7DF75FD /* WorldGeometry.swift */; };
 		6E35A360D39F414EE6BCF33D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 376665C0276EE16DB38D446C /* ScreenSaver.framework */; };
 		775F4C6BAC28DDE0B944A669 /* MatrixSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35D25207462DFAD250659D /* MatrixSaverView.swift */; };
 		79940E5EE863453C20D700A1 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8EF983770F127AA2E0B66F12 /* Shaders.metal */; };
+		80C515EADDCCA88E5B526A7F /* SystemFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */; };
 		8A488B3F98AC9C19C940F0BA /* SaverSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F8619ED393AE446B4EC600 /* SaverSettingsTests.swift */; };
 		8D5833F90D2968AFE6205233 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069C4D275F158311F8D8B861 /* main.swift */; };
 		8E295CA7ADEC77BA04098626 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B500DB40A6102A33964CC /* Metal.framework */; };
@@ -34,6 +39,7 @@
 		939857E9BF3941A54C8771CF /* RainMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BC60B6D3E716334A70F050 /* RainMath.swift */; };
 		9955229DEB45925446CFD4DE /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B6D7C6800D287002FAF6EE /* Uniforms.swift */; };
 		9E63636E7DBC08FA3EA091E4 /* SaverSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C13836744833D14D96A418 /* SaverSettings.swift */; };
+		A292F45CBEFDF54823CD3155 /* SystemFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */; };
 		AB10C29DC297FB7046BCDA68 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F08D3C77EDB0A5A48289E7ED /* QuartzCore.framework */; };
 		B1214075EE4190A24D39BB64 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 376665C0276EE16DB38D446C /* ScreenSaver.framework */; };
 		BF1A0E5F8337B163EFA1E02C /* SaverSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C13836744833D14D96A418 /* SaverSettings.swift */; };
@@ -53,12 +59,14 @@
 		55902684EEDD91A4E7F0889C /* GlyphAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlyphAtlas.swift; sourceTree = "<group>"; };
 		5860D7C6B479C7A69B10353C /* RainMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainMathTests.swift; sourceTree = "<group>"; };
 		60DD802E21A51ED4F7DF75FD /* WorldGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldGeometry.swift; sourceTree = "<group>"; };
+		72D9B0C7E11911195B0EED09 /* SystemFailureOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFailureOverlay.swift; sourceTree = "<group>"; };
 		7C35D25207462DFAD250659D /* MatrixSaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixSaverView.swift; sourceTree = "<group>"; };
 		84C13836744833D14D96A418 /* SaverSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaverSettings.swift; sourceTree = "<group>"; };
 		8EF983770F127AA2E0B66F12 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		92B6D7C6800D287002FAF6EE /* Uniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Uniforms.swift; sourceTree = "<group>"; };
 		9D5EEA9C1F07CF0B54283238 /* GPUParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUParityTests.swift; sourceTree = "<group>"; };
 		B3F8619ED393AE446B4EC600 /* SaverSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaverSettingsTests.swift; sourceTree = "<group>"; };
+		BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFailure.swift; sourceTree = "<group>"; };
 		BD6692CF524EF97B78E74F1F /* MatrixSaverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixSaverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D896E011375A5435036E8FA9 /* WorldGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldGeometryTests.swift; sourceTree = "<group>"; };
 		E545DB7357FC7650E57092BA /* RainRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainRenderer.swift; sourceTree = "<group>"; };
@@ -66,6 +74,7 @@
 		E7C99E6DE48DB8A8B3DC216E /* MatrixSaver.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixSaver.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB8B500DB40A6102A33964CC /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		F08D3C77EDB0A5A48289E7ED /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F5AAEAF7C7BEC80E10DC6A02 /* SystemFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFailureTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +115,7 @@
 				9D5EEA9C1F07CF0B54283238 /* GPUParityTests.swift */,
 				5860D7C6B479C7A69B10353C /* RainMathTests.swift */,
 				B3F8619ED393AE446B4EC600 /* SaverSettingsTests.swift */,
+				F5AAEAF7C7BEC80E10DC6A02 /* SystemFailureTests.swift */,
 				D896E011375A5435036E8FA9 /* WorldGeometryTests.swift */,
 			);
 			path = MatrixSaverTests;
@@ -161,6 +171,8 @@
 				E545DB7357FC7650E57092BA /* RainRenderer.swift */,
 				84C13836744833D14D96A418 /* SaverSettings.swift */,
 				8EF983770F127AA2E0B66F12 /* Shaders.metal */,
+				BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */,
+				72D9B0C7E11911195B0EED09 /* SystemFailureOverlay.swift */,
 				92B6D7C6800D287002FAF6EE /* Uniforms.swift */,
 				60DD802E21A51ED4F7DF75FD /* WorldGeometry.swift */,
 			);
@@ -295,6 +307,8 @@
 				F00B3D409ADB50350FA7351E /* SaverSettings.swift in Sources */,
 				8A488B3F98AC9C19C940F0BA /* SaverSettingsTests.swift in Sources */,
 				79940E5EE863453C20D700A1 /* Shaders.metal in Sources */,
+				A292F45CBEFDF54823CD3155 /* SystemFailure.swift in Sources */,
+				4433525BA0E34314AA8FB723 /* SystemFailureTests.swift in Sources */,
 				34F3306642E3FEB04F53F248 /* Uniforms.swift in Sources */,
 				22AC8741378EC54387EEE4DF /* WorldGeometry.swift in Sources */,
 				4292C86DA477B102CA040EB4 /* WorldGeometryTests.swift in Sources */,
@@ -312,6 +326,8 @@
 				61F8D90950E7A7912E9A7B69 /* RainRenderer.swift in Sources */,
 				BF1A0E5F8337B163EFA1E02C /* SaverSettings.swift in Sources */,
 				2CF239CEC2440336CA56B043 /* Shaders.metal in Sources */,
+				80C515EADDCCA88E5B526A7F /* SystemFailure.swift in Sources */,
+				5316DE48BF805C542E9C9E1F /* SystemFailureOverlay.swift in Sources */,
 				6604879642C43807910F1014 /* Uniforms.swift in Sources */,
 				6B895523D4FC355CA73E107C /* WorldGeometry.swift in Sources */,
 			);
@@ -328,6 +344,8 @@
 				25D9F2E0E1F5BCDC067ED2E2 /* RainRenderer.swift in Sources */,
 				9E63636E7DBC08FA3EA091E4 /* SaverSettings.swift in Sources */,
 				4A893E002CE3186294263117 /* Shaders.metal in Sources */,
+				5774D9F4BBD6FC0BC792B848 /* SystemFailure.swift in Sources */,
+				3398A2D8533A59D52F8336AB /* SystemFailureOverlay.swift in Sources */,
 				9955229DEB45925446CFD4DE /* Uniforms.swift in Sources */,
 				FF1F5D467C628C34CB8A77BD /* WorldGeometry.swift in Sources */,
 				8D5833F90D2968AFE6205233 /* main.swift in Sources */,

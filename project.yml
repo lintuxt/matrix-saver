@@ -60,6 +60,7 @@ targets:
       - path: Sources/MatrixSaver/Uniforms.swift
       - path: Sources/MatrixSaver/Shaders.metal
       - path: Sources/MatrixSaver/SaverSettings.swift
+      - path: Sources/MatrixSaver/SystemFailure.swift
       - path: Tests/MatrixSaverTests
     settings:
       base:
