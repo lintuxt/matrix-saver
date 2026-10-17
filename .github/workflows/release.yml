@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build & release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          # Xcode 26+ ships the Metal compiler as a separate component.
+          xcodebuild -downloadComponent MetalToolchain || true
+
+      - name: Build
+        run: |
+          xcodebuild -project MatrixSaver.xcodeproj -scheme MatrixSaver -configuration Release \
+            -derivedDataPath build build
+          lipo -archs build/Build/Products/Release/MatrixSaver.saver/Contents/MacOS/MatrixSaver
+
+      - name: Package
+        id: package
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          PKG="MatrixSaver-${TAG}"
+          mkdir -p "dist/${PKG}"
+          cp -R build/Build/Products/Release/MatrixSaver.saver "dist/${PKG}/"
+          cp matrix-config LICENSE "dist/${PKG}/"
+          cat > "dist/${PKG}/INSTALL.txt" <<'EOF'
+          MatrixSaver — Matrix digital rain screen saver for macOS 14+
+
+          1. In Terminal, from this folder, clear the download quarantine
+             (the screen saver is not notarized by Apple):
+               xattr -dr com.apple.quarantine MatrixSaver.saver
+          2. Double-click MatrixSaver.saver and choose to install it.
+          3. Pick "Matrix" in System Settings > Screen Saver.
+
+          Change settings from Terminal with ./matrix-config (see --help).
+
+          Full instructions: https://github.com/lintuxt/matrix-saver#install
+          EOF
+          cd dist
+          ditto -c -k --keepParent "${PKG}" "${PKG}.zip"
+          shasum -a 256 "${PKG}.zip" > "${PKG}.zip.sha256"
+          ls -la
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/*.sha256
+          generate_release_notes: true
+          name: MatrixSaver ${{ steps.package.outputs.tag }}
