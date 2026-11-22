@@ -60,8 +60,22 @@ xcodebuild -project MatrixSaver.xcodeproj -scheme SaverTest -configuration Relea
 build/Build/Products/Release/SaverTest.app/Contents/MacOS/SaverTest \
     --record --width 3840 --height 2160 --scale 2 --seconds 15 |
   ffmpeg -f rawvideo -pix_fmt bgra -s 3840x2160 -r 30 -i - \
-    -vf scale=1920:1080:flags=lanczos -c:v libx264 -preset veryslow -crf 18 \
-    -tune grain -pix_fmt yuv420p -movflags +faststart docs/media/demo.mp4
+    -c:v libx265 -crf 16 -pix_fmt yuv420p -tag:v hvc1 demo-4k.mp4
+```
+
+The README animation (`docs/media/demo.webp`) is a seamless 6-second loop cut from
+that video: 7 seconds of footage, with the last second cross-faded into the first.
+It's encoded as animated WebP with `img2webp` from Homebrew's `webp` package,
+because GitHub won't play videos committed to a repo and a GIF would be twice the
+size with banded glow:
+
+```sh
+mkdir frames
+ffmpeg -ss 2 -t 7 -i demo-4k.mp4 -filter_complex "[0]fps=20,scale=1280:720:flags=lanczos,split=3[a][b][c];\
+[a]trim=0:1,setpts=PTS-STARTPTS[head];[b]trim=6:7,setpts=PTS-STARTPTS[tail];\
+[c]trim=1:6,setpts=PTS-STARTPTS[mid];[tail][head]xfade=transition=fade:duration=1:offset=0[blend];\
+[blend][mid]concat=n=2:v=1[out]" -map "[out]" frames/f%04d.png
+img2webp -loop 0 -lossy -q 75 -m 6 -d 50 frames/f*.png -o docs/media/demo.webp
 ```
 
 | Option | Default |

@@ -2,9 +2,7 @@
 
 Matrix-style digital rain for your Mac's screen saver, rendered with Metal.
 
-[![MatrixSaver demo: green mirrored katakana raining down a black screen](docs/media/demo-poster.jpg)](docs/media/demo.mp4)
-
-<sub>▶ Click the image to watch a 15-second demo (1080p, 16 MB).</sub>
+![MatrixSaver demo: green mirrored katakana raining down a black screen](docs/media/demo.webp)
 
 Styled after the 1999 film: mirrored katakana, long fading trails, a dim
 out-of-focus background layer, and an optional **SYSTEM FAILURE** alert that
