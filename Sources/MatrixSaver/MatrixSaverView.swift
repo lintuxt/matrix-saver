@@ -19,7 +19,7 @@ final class MatrixSaverView: ScreenSaverView {
     private static let exitOnStopKey = "ExitOnStop"
     /// Hidden default: keep the System Failure alert on screen (for checking its look).
     private static let systemFailureAlwaysKey = "SystemFailureAlways"
-    private static let seed: UInt32 = 0x4D41_5452  // "MATR"
+    static let seed: UInt32 = 0x4D41_5452  // "MATR"
     private static var nextSerial = 0
 
     private let serial: Int

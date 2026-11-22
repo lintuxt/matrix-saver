@@ -29,6 +29,7 @@
 		6604879642C43807910F1014 /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B6D7C6800D287002FAF6EE /* Uniforms.swift */; };
 		6B895523D4FC355CA73E107C /* WorldGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD802E21A51ED4F7DF75FD /* WorldGeometry.swift */; };
 		6E35A360D39F414EE6BCF33D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 376665C0276EE16DB38D446C /* ScreenSaver.framework */; };
+		71D7A534CD0AC7D5DD0FC3CD /* DemoRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79E3E68361D8C045CAE564E /* DemoRecorder.swift */; };
 		775F4C6BAC28DDE0B944A669 /* MatrixSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35D25207462DFAD250659D /* MatrixSaverView.swift */; };
 		79940E5EE863453C20D700A1 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8EF983770F127AA2E0B66F12 /* Shaders.metal */; };
 		80C515EADDCCA88E5B526A7F /* SystemFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */; };
@@ -66,6 +67,7 @@
 		92B6D7C6800D287002FAF6EE /* Uniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Uniforms.swift; sourceTree = "<group>"; };
 		9D5EEA9C1F07CF0B54283238 /* GPUParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUParityTests.swift; sourceTree = "<group>"; };
 		B3F8619ED393AE446B4EC600 /* SaverSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaverSettingsTests.swift; sourceTree = "<group>"; };
+		B79E3E68361D8C045CAE564E /* DemoRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRecorder.swift; sourceTree = "<group>"; };
 		BB489E436B16DA9EBB4EAB51 /* SystemFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFailure.swift; sourceTree = "<group>"; };
 		BD6692CF524EF97B78E74F1F /* MatrixSaverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixSaverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D896E011375A5435036E8FA9 /* WorldGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldGeometryTests.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 		EB2D4826B39589360A0CF891 /* SaverTest */ = {
 			isa = PBXGroup;
 			children = (
+				B79E3E68361D8C045CAE564E /* DemoRecorder.swift */,
 				069C4D275F158311F8D8B861 /* main.swift */,
 			);
 			path = SaverTest;
@@ -338,6 +341,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20C92D2DF7872F1680C628FB /* ConfigureSheet.swift in Sources */,
+				71D7A534CD0AC7D5DD0FC3CD /* DemoRecorder.swift in Sources */,
 				47E84BA87E167CC4B85EE1A6 /* GlyphAtlas.swift in Sources */,
 				34A9392C16A44D4E04353F78 /* MatrixSaverView.swift in Sources */,
 				F65630873B35124549E20447 /* RainMath.swift in Sources */,

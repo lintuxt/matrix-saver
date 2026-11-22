@@ -85,6 +85,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+if CommandLine.arguments.contains("--record") {
+    exit(MainActor.assumeIsolated { DemoRecorder.run(CommandLine.arguments) })
+}
+
 let app = NSApplication.shared
 let delegate = AppDelegate()
 app.delegate = delegate

@@ -47,6 +47,37 @@ open build/Build/Products/Debug/SaverTest.app --args --preview   # one 320×200 
 
 <br>
 
+## Recording a demo video
+
+SaverTest has a hidden `--record` mode. It renders the rain offscreen with the
+real Metal renderer at a fixed frame rate and writes raw BGRA frames to stdout,
+so frames are exact and nothing takes over your displays.
+
+```sh
+xcodebuild -project MatrixSaver.xcodeproj -scheme SaverTest -configuration Release \
+  -derivedDataPath build build
+
+build/Build/Products/Release/SaverTest.app/Contents/MacOS/SaverTest \
+    --record --width 3840 --height 2160 --scale 2 --seconds 15 |
+  ffmpeg -f rawvideo -pix_fmt bgra -s 3840x2160 -r 30 -i - \
+    -vf scale=1920:1080:flags=lanczos -c:v libx264 -preset veryslow -crf 18 \
+    -tune grain -pix_fmt yuv420p -movflags +faststart docs/media/demo.mp4
+```
+
+| Option | Default |
+|---|---|
+| `--width`, `--height` | `1920`, `1080` (pixels) |
+| `--scale` | `1` (use `2` for retina-sharp glyphs) |
+| `--fps`, `--seconds` | `30`, `12` |
+| `--palette`, `--glyph-size`, `--glow` | `green`, `18`, `true` |
+
+Render at `--scale 2` and downscale: at 1× the glyphs look soft, and thin
+green-on-black strokes need a high-quality encode (low CRF) to survive
+compression. The System Failure alert is a separate AppKit overlay and isn't
+captured.
+
+<br>
+
 ## Tests
 
 ```sh

@@ -99,12 +99,28 @@ final class RainRenderer {
 
     /// Draws and presents one frame. `uniforms` must carry `atlas`'s glyphCount/cols/rows.
     func render(uniforms: Uniforms, glow: Bool) {
-        guard let atlas, let drawable = layer.nextDrawable() else { return }
-        let target = drawable.texture
-        ensureTextures(width: target.width, height: target.height)
-        guard let scene, let glowA, let glowB,
+        guard atlas != nil, let drawable = layer.nextDrawable(),
               let cmd = ctx.queue.makeCommandBuffer() else { return }
         cmd.label = "MatrixSaver frame"
+        guard encode(cmd, uniforms: uniforms, glow: glow, into: drawable.texture) else { return }
+        cmd.present(drawable)
+        cmd.commit()
+    }
+
+    /// Draws one frame into `target` (a `RenderContext.outputFormat` render target) and
+    /// commits it. Used for offscreen capture; returns nil if nothing was drawn.
+    func render(uniforms: Uniforms, glow: Bool, into target: MTLTexture) -> MTLCommandBuffer? {
+        guard let cmd = ctx.queue.makeCommandBuffer() else { return nil }
+        cmd.label = "MatrixSaver offscreen frame"
+        guard encode(cmd, uniforms: uniforms, glow: glow, into: target) else { return nil }
+        cmd.commit()
+        return cmd
+    }
+
+    private func encode(_ cmd: MTLCommandBuffer, uniforms: Uniforms, glow: Bool, into target: MTLTexture) -> Bool {
+        guard let atlas else { return false }
+        ensureTextures(width: target.width, height: target.height)
+        guard let scene, let glowA, let glowB else { return false }
 
         var u = uniforms
         draw(cmd, into: scene, pipeline: ctx.rainPipeline, label: "rain") { enc in
@@ -135,9 +151,7 @@ final class RainRenderer {
             enc.setFragmentTexture(scene, index: 0)
             enc.setFragmentTexture(glow ? glowA : ctx.blackTexture, index: 1)
         }
-
-        cmd.present(drawable)
-        cmd.commit()
+        return true
     }
 
     private func draw(_ cmd: MTLCommandBuffer, into texture: MTLTexture, pipeline: MTLRenderPipelineState,
